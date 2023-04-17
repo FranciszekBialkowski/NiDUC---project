@@ -1,5 +1,5 @@
-# liniowymi generatorami kongruencyjnymi liczb pseudolosowych, z modyfikacjami poprawiajcymi losowosc(duzy okres
-# powtarzania sekswencji, wykorzystanie zegara czasu rzeczywistego do tworzenia ziarna
+# liniowymi generatorami kongruencyjnymi liczb pseudolosowych, z modyfikacjami poprawiajcymi losowosc (duzy okres
+# powtarzania sekwencji, wykorzystanie zegara czasu rzeczywistego do tworzenia ziarna
 
 import time
 
@@ -26,9 +26,6 @@ class RandomGenerator:
         x = (self.a * self.seed + self.c) % self.m
         return x % (max - min + 1) + min
 
-
-
-#do sprawdzenia
+# do sprawdzenia
 # random_gen = RandomGenerator()
 # print(random_gen.gen_random_list(10))
-
