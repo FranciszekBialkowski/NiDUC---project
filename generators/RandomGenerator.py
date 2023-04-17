@@ -21,8 +21,13 @@ class RandomGenerator:
 
             leng -= 1
         return self.tab
+    def gen_one_number(self, min, max):
+        x = (self.a * self.seed + self.c) % self.m
+        self.seed=x
+        return x
 
 
-#do sprawdzenia
+#Tescik
 # random_gen = RandomGenerator()
-# print(random_gen.gen_random_list(10))
+# for i in range(0,100):
+#     print(random_gen.gen_one_number(1, 10))
