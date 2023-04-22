@@ -1,14 +1,17 @@
 from Person import Person
 from RandomGenerator import RandomGenerator
 from Insurance import Insurance
-import time
+import re
 
 
 class Simulation:
-    population_size = 2000  # wielkość populacji
+    population_size = Insurance.employees * Insurance.PEOPLE_PER_EMPLOYEE  # wielkość populacji
     people = []  # tablica przechowująca populację
-    time = 10  # ilość lat w symulacji
+    time = 1  # ilość lat w symulacji
     rng = RandomGenerator()
+    month = 1  # aktualny miesiąc
+    ACCIDENT_RANGE = 50000000  # zakres losowania
+    accident_counter = 0  # ilość wypadków
 
     @staticmethod
     def main():
@@ -16,20 +19,24 @@ class Simulation:
         Simulation.create_population()
         for i in range(Simulation.time):
             Simulation.year()
-        print(f"Końcowe pieniądze ubezpieczalni: {Insurance.collected_money}")
+
+        print("Końcowe pieniądze ubezpieczalni:", re.sub(r'(?<!^)(?=(\d{3})+$)', r'.', str(Insurance.collected_money)))
+        print(f"Ilość wypadków: {Simulation.accident_counter}")
 
     @staticmethod
     def year():
         """Akcja wykonywana co rok"""
-        month_counter = 1  # licznik miesięcy
-        while month_counter <= 12:
+        while Simulation.month <= 12:
             for person in Simulation.people:
-                if month_counter == 1:  # początek roku
+                if Simulation.month == 1:  # początek roku
+                    person.accident_ratio()  # wyliczenie szansy na wypadek
+                    person.setMonth(Simulation.month)  # ustawienie aktualnego miesiąca
                     person.pay()  # zapłacenie składki
-                person.check_if_accident(Simulation.rng.gen_random_between(0, Person.MAX_ACC_RATIO))
+                if person.check_if_accident(Simulation.rng.gen_random_between(0, Simulation.ACCIDENT_RANGE)):
+                    Simulation.accident_counter += 1
 
-            Insurance.collected_money -= Insurance.employees * Insurance.salary  # wypłata pracowników ubezpieczalni
-            month_counter += 1
+            Insurance.collected_money -= Insurance.employees * Insurance.SALARY  # wypłata pracowników ubezpieczalni
+            Simulation.month += 1
 
     @staticmethod
     def create_population():
@@ -37,17 +44,16 @@ class Simulation:
         for i in range(Simulation.population_size):
             # losowanie cech
             age = Simulation.rng.gen_random_between(18, 100)
-            if_healthy = Simulation.rng.gen_random_between(0, 1)
-            gender = Simulation.rng.gen_random_between(0, 1)
-            car_cost = Simulation.rng.gen_random_between(5000, 200000)
+            gender = Simulation.rng.gen_zero_or_one()
+            car_cost = Simulation.rng.gen_random_between(5000, 50000)
             driver_exp_years = Simulation.rng.gen_random_between(0, age - 18)
 
-            print(f"Person{i}: {age},{if_healthy},{gender},{car_cost},{driver_exp_years}")
+            # print(f"Person{i}: {age},{gender},{car_cost},{driver_exp_years}")
+
+            person = Person(age, gender, car_cost, driver_exp_years)
 
             # dodanie osoby do listy
-            Simulation.people.append(Person(age, if_healthy, gender, car_cost, driver_exp_years))
-
-            Simulation.rng.gen_random_list(1)  # ta linijka do usunięcia
+            Simulation.people.append(person)
 
 
 Simulation.main()

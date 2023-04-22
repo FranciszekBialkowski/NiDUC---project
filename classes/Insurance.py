@@ -1,20 +1,16 @@
 class Insurance:
-    BASE_COST = 50  # bazowy koszt ubezpieczenia
-    collected_money = 0  # łączne, wpłacone pieniądze
-    health_cost = 50  # dodatkowy koszt związany ze stanem zdrowia
-    employees = 5   # ilość pracowników ubezpieczalni
-    salary = 3000   # wysokość wypłaty pracownika
+    BASE_COST = 250  # bazowy koszt ubezpieczenia
+    collected_money = 0  # pieniądze ubezpieczalni
+    employees = 220  # ilość pracowników ubezpieczalni
+    SALARY = 3490  # wysokość wypłaty pracownika
+    PEOPLE_PER_EMPLOYEE = 1000  # ilość osób na jednego pracownika
 
     @staticmethod
     def count_final_cost(person):
         """Liczenie finalnego kosztu ubezpieczenia"""
-        if person.if_healthy:
-            return Insurance.BASE_COST + person.age
-        return Insurance.BASE_COST + person.age + Insurance.health_cost
+        return Insurance.BASE_COST + person.last_accident + int(person.car_cost * 0.01)  # do zmiany
 
     @staticmethod
-    def count_compensation(person, if_fault, damage_cost):
+    def count_compensation(damage_cost):
         """Wyliczenie wysokości odszkodowania"""
-        if if_fault:
-            return 100 + damage_cost
-        return 1000 + damage_cost
+        return damage_cost
