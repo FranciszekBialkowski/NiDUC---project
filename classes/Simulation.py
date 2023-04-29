@@ -12,6 +12,8 @@ class Simulation:
     month = 1  # aktualny miesiąc
     ACCIDENT_RANGE = 50000000  # zakres losowania
     accident_counter = 0  # ilość wypadków
+    death_counter = 0  # liczba osób, które zginęły
+    new_people_chance = 90  # szansa na przyjście nowej osoby (jeszcze do okreslenia)
 
     @staticmethod
     def main():
@@ -22,6 +24,8 @@ class Simulation:
 
         print("Końcowe pieniądze ubezpieczalni:", re.sub(r'(?<!^)(?=(\d{3})+$)', r'.', str(Insurance.collected_money)))
         print(f"Ilość wypadków: {Simulation.accident_counter}")
+        print(f"ile zginęło: {Simulation.death_counter}")
+        print(f"Populacja: {len(Simulation.people)}")
 
     @staticmethod
     def year():
@@ -34,6 +38,11 @@ class Simulation:
                     person.pay()  # zapłacenie składki
                 if person.check_if_accident(Simulation.rng.gen_random_between(0, Simulation.ACCIDENT_RANGE)):
                     Simulation.accident_counter += 1
+                if person.check_death():
+                    Simulation.death_counter += 1
+                    Simulation.people.remove(person)  # usuwanie ubezpieczonego jeśli zginął
+            if Simulation.rng.gen_random_between(0, 100) < Simulation.new_people_chance:
+                Simulation.people.append(Simulation.create_person())  # dodawanie nowego ubezpieczonego
 
             Insurance.collected_money -= Insurance.employees * Insurance.SALARY  # wypłata pracowników ubezpieczalni
             Simulation.month += 1
@@ -42,18 +51,18 @@ class Simulation:
     def create_population():
         """Utworzenie populacji"""
         for i in range(Simulation.population_size):
-            # losowanie cech
-            age = Simulation.rng.gen_random_between(18, 100)
-            gender = Simulation.rng.gen_zero_or_one()
-            car_cost = Simulation.rng.gen_random_between(5000, 50000)
-            driver_exp_years = Simulation.rng.gen_random_between(0, age - 18)
+            Simulation.people.append(Simulation.create_person())
 
-            # print(f"Person{i}: {age},{gender},{car_cost},{driver_exp_years}")
+    @staticmethod
+    def create_person():
+        # losowanie cech
+        age = Simulation.rng.gen_random_between(18, 100)
+        gender = Simulation.rng.gen_zero_or_one()
+        car_cost = Simulation.rng.gen_random_between(5000, 50000)
+        driver_exp_years = Simulation.rng.gen_random_between(0, age - 18)
 
-            person = Person(age, gender, car_cost, driver_exp_years)
-
-            # dodanie osoby do listy
-            Simulation.people.append(person)
+        person = Person(age, gender, car_cost, driver_exp_years)
+        return person
 
 
 Simulation.main()
