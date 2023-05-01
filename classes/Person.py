@@ -9,13 +9,11 @@ class Person:
     MAX_MONTH = 1000  # maksymalna liczba zależna od aktualnego miesiąca
     MAX_VISION_DEFECT = 2000  # maksymalna liczba zależna od wady wzroku
     MAX_GENDER = 1000
-    DEATH_CHANCE = 50
     month = 1  # aktualny miesiąc
     accident_ratio_var = 0  # współczynnik szansy na wypadek
     last_accident = 0  # dodatkowy koszt związany z ostatnim wypadkiem
     cost = 0  # aktualny koszt składki
     random_value = RandomGenerator()  # obiekt klasy generatora liczb losowych
-    death = 0  # początkowa szansa na zginięcie
 
     def __init__(self, age, gender, car_cost, driver_exp_years):
         self.age = age  # wiek
@@ -56,19 +54,9 @@ class Person:
         """Obliczenie wysokości szkód"""
         x = self.random_value.gen_random_between(0, 100)
         if x < 15:  # 15%
-            self.death = self.random_value.gen_random_between(0, 100)  # losowanie szansy na zginięcie
-            self.check_death()
-
             return self.car_cost  # cały samochód zniszczony
         else:  # 85%
             return int(x * self.car_cost / 100)  # samochód uszkodzony
-
-    def check_death(self):
-        """Sprawdzenie czy ubezpieczony zginął"""
-        if self.death > (100 - self.DEATH_CHANCE):
-            return True
-        else:
-            return False
 
     def set_vision_defect(self):
         """Sprawdzenie wystąpienia wady wzroku"""
