@@ -108,10 +108,10 @@ class Simulation:
             file.write(f"{Simulation.year_counter};{Simulation.month};{Simulation.month_money};"
                        f"{Simulation.below_equal_five};"
                        f"{round(Simulation.below_equal_five_age/Simulation.below_equal_five)};"
-                       f"{Simulation.below_equal_five_acc}"
+                       f"{Simulation.below_equal_five_acc};"
                        f"{Simulation.below_equal_seven};"
                        f"{round(Simulation.below_equal_seven_age/Simulation.below_equal_seven)};"
-                       f"{Simulation.below_equal_five_acc}"
+                       f"{Simulation.below_equal_five_acc};"
                        f"{Simulation.over_seven};"
                        f"{round(Simulation.over_seven_age/Simulation.over_seven)};"
                        f"{Simulation.over_seven_acc}\n")
