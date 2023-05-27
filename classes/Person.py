@@ -68,7 +68,7 @@ class Person:
             return int(x * self.car_cost / 100)  # samochód uszkodzony
 
     def check_death(self):
-        """Sprawdzenie czy ubezpieczony zginął"""
+        """Sprawdzenie, czy ubezpieczony zginął"""
         if self.death > (100 - self.DEATH_CHANCE):  # śmierć w wypadku
             return True
         elif 80 < self.age < self.random_value.gen_random_between(0, 122) and self.random_value.gen_zero_or_one():  # śmierć ze starości

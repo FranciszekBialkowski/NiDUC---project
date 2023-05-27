@@ -1,8 +1,8 @@
 class Insurance:
-    BASE_COST = 250  # bazowy koszt ubezpieczenia
+    BASE_COST = 200  # bazowy koszt ubezpieczenia
     collected_money = 0  # pieniądze ubezpieczalni
     employees = 1000  # ilość pracowników ubezpieczalni
-    SALARY = 3490  # wysokość wypłaty pracownika
+    SALARY = 4200  # wysokość wypłaty pracownika
     PEOPLE_PER_EMPLOYEE = 1000  # ilość osób na jednego pracownika
     NEW_DRIVER_COST = 100
 

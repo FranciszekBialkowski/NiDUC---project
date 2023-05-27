@@ -16,6 +16,9 @@ class Simulation:
     year_counter = 1
     if_acc = 0
     month_money = 0
+    month_expenses = 0
+    men_acc = 0
+    women_acc = 0
 
     below_equal_five = 0
     below_equal_seven = 0
@@ -31,18 +34,20 @@ class Simulation:
 
     @staticmethod
     def main():
-        file = open("log.txt", "w+")
-        file.write(f"Rok;Miesiąc;Zebrane pieniądze;"
-                   f"Koszt składki <500;Średki wiek;Ilość wypadków;"
-                   f"Koszt składki 500-700;Średki wiek;Ilość wypadków;"
-                   f"Koszt skladki >700;Średki wiek;Ilość wypadków\n")
+        file = open("log1.txt", "w+")
+        file.write(f"Rok;Miesiąc;Zarobki;Wydatki;"
+                   f"Liczba osób_<500;Średni wiek_<500;Liczba wypadków_<500;"
+                   f"Liczba osób_500-700;Średni wiek_500-700;Liczba wypadków_500-700;"
+                   f"Liczba osób_>700;Średni wiek_>700;Liczba wypadków_>700;"
+                   f"Liczba wypadków mężczyzn;Liczba wypadków kobiet\n")
         file.close()
         """Start symulacji"""
         Simulation.create_population()
         for i in range(Simulation.time):
             Simulation.year()
 
-        print("Końcowe pieniądze ubezpieczalni:", re.sub(r'(?<!^)(?=(\d{3})+$)', r'.', str(Insurance.collected_money)), "zl")
+        print("Końcowe pieniądze ubezpieczalni:",
+              re.sub(r'(?<!^)(?=(\d{3})+$)', r'.', str(Insurance.collected_money)), "zl")
         print(f"Populacja: {len(Simulation.people)}")
 
     @staticmethod
@@ -65,7 +70,12 @@ class Simulation:
                 if person.check_if_accident(Simulation.rng.gen_random_between(0, Simulation.ACCIDENT_RANGE)):
                     Simulation.accident_counter += 1
                     Simulation.if_acc = 1  # Sprzezenie zwrotne czy osoba miala wypadek w tym miesiacu
-                    Simulation.month_money -= person.accident_cost
+                    Simulation.month_expenses += person.accident_cost
+                    if person.gender == 1:
+                        Simulation.men_acc += 1
+                    else:
+                        Simulation.women_acc += 1
+
                 if person.check_death():
                     Simulation.death_counter += 1
                     Simulation.people.remove(person)  # usuwanie ubezpieczonego, jeśli zginął
@@ -73,15 +83,18 @@ class Simulation:
                 Simulation.calculate_person(person)  # wliczanie osoby do danego przedzialu
                 Simulation.if_acc = 0  # Reset sprzezenia
             Insurance.collected_money -= Insurance.employees * Insurance.SALARY  # wypłata pracowników ubezpieczalni
+            Simulation.month_expenses += Insurance.employees * Insurance.SALARY
 
             Simulation.print_log()
             Simulation.month += 1
             Simulation.month_money = 0
+            Simulation.month_expenses = 0
 
         Simulation.year_counter += 1
 
-        for i in range(Simulation.rng.gen_random_between(Simulation.death_counter - int(0.1*Simulation.death_counter),
-                                                         Simulation.death_counter + int(0.1*Simulation.death_counter))):
+        for i in range(Simulation.rng.gen_random_between(Simulation.death_counter - int(0.1 * Simulation.death_counter),
+                                                         Simulation.death_counter + int(
+                                                             0.1 * Simulation.death_counter))):
             Simulation.people.append(Simulation.create_person())  # dodawanie nowego ubezpieczonego
 
     @staticmethod
@@ -104,17 +117,27 @@ class Simulation:
     @staticmethod
     def print_log():
         """Zapisywanie do pliku"""
-        with open("log.txt", "a") as file:
-            file.write(f"{Simulation.year_counter};{Simulation.month};{Simulation.month_money};"
-                       f"{Simulation.below_equal_five};"
-                       f"{round(Simulation.below_equal_five_age/Simulation.below_equal_five)};"
-                       f"{Simulation.below_equal_five_acc};"
-                       f"{Simulation.below_equal_seven};"
-                       f"{round(Simulation.below_equal_seven_age/Simulation.below_equal_seven)};"
-                       f"{Simulation.below_equal_five_acc};"
-                       f"{Simulation.over_seven};"
-                       f"{round(Simulation.over_seven_age/Simulation.over_seven)};"
-                       f"{Simulation.over_seven_acc}\n")
+        below_equal_five_avg_age = round(Simulation.below_equal_five_age / Simulation.below_equal_five) \
+            if Simulation.below_equal_five > 0 else 0
+        below_equal_seven_avg_age = round(Simulation.below_equal_seven_age / Simulation.below_equal_seven) \
+            if Simulation.below_equal_seven > 0 else 0
+        over_seven_avg_age = round(Simulation.over_seven_age / Simulation.over_seven) \
+            if Simulation.over_seven > 0 else 0
+
+        with open("log1.txt", "a") as file:
+            file.write(f"{Simulation.year_counter};{Simulation.month};"  # rok, miesiąc
+                       f"{Simulation.month_money};{Simulation.month_expenses};"  # zarobki, wydatki
+                       f"{Simulation.below_equal_five};"  # liczba osób w grupie 1
+                       f"{below_equal_five_avg_age};"  # średni wiek w grupie 1
+                       f"{Simulation.below_equal_five_acc};"  # liczba wypadków w grupie 1
+                       f"{Simulation.below_equal_seven};"  # liczba osób w grupie 2
+                       f"{below_equal_seven_avg_age};"  # średni wiek w grupie 2
+                       f"{Simulation.below_equal_seven_acc};"  # liczba wypadków w grupie 2
+                       f"{Simulation.over_seven};"  # liczba osób w grupie 3
+                       f"{over_seven_avg_age};"  # średni wiek w grupie 3
+                       f"{Simulation.over_seven_acc};"  # liczba wypadków w grupie 3
+                       f"{Simulation.men_acc};"  # liczba wypadków mężczyzn
+                       f"{Simulation.women_acc}\n")  # liczba wypadków kobiet
 
         Simulation.below_equal_five = 0
         Simulation.below_equal_seven = 0
@@ -125,6 +148,8 @@ class Simulation:
         Simulation.below_equal_five_age = 0
         Simulation.below_equal_seven_age = 0
         Simulation.over_seven_age = 0
+        Simulation.men_acc = 0
+        Simulation.women_acc = 0
 
     @staticmethod
     def calculate_person(person):
@@ -134,19 +159,19 @@ class Simulation:
 
         if person_cost <= 500:
             Simulation.below_equal_five += 1
-            if (Simulation.if_acc):
+            if Simulation.if_acc:
                 Simulation.below_equal_five_acc += 1
             Simulation.below_equal_five_age += person_age
 
-        elif (person_cost <= 700):
+        elif person_cost <= 700:
             Simulation.below_equal_seven += 1
-            if (Simulation.if_acc):
+            if Simulation.if_acc:
                 Simulation.below_equal_seven_acc += 1
             Simulation.below_equal_seven_age += person_age
 
         else:
             Simulation.over_seven += 1
-            if (Simulation.if_acc):
+            if Simulation.if_acc:
                 Simulation.over_seven_acc += 1
             Simulation.over_seven_age += person_age
 
