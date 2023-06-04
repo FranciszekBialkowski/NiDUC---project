@@ -1,10 +1,12 @@
 from Person import Person
 from RandomGenerator import RandomGenerator
 from Insurance import Insurance
+from Visualisation import Visualisation
 import re
 
 
 class Simulation:
+    if_visualisation = False
     population_size = Insurance.employees * Insurance.PEOPLE_PER_EMPLOYEE  # wielkość populacji
     people = []  # tablica przechowująca populację
     time = 50  # ilość lat w symulacji
@@ -19,6 +21,10 @@ class Simulation:
     month_expenses = 0
     men_acc = 0
     women_acc = 0
+
+    young_people = 0    # liczba młodych ludzi
+    middle_people = 0   # liczba ludzi w średnim wieku
+    old_people = 0      # liczba starych ludzi
 
     below_equal_five = 0
     below_equal_seven = 0
@@ -43,6 +49,8 @@ class Simulation:
         file.close()
         """Start symulacji"""
         Simulation.create_population()
+        if Simulation.if_visualisation:
+            Visualisation.start_visualisation()
         for i in range(Simulation.time):
             Simulation.year()
 
@@ -68,6 +76,9 @@ class Simulation:
                     if person.last_accident_counter == 0:
                         person.last_accident = 0
                 if person.check_if_accident(Simulation.rng.gen_random_between(0, Simulation.ACCIDENT_RANGE)):
+                    if Simulation.if_visualisation:
+                        Visualisation.add_unit_to_section("accident", person.gender)
+
                     Simulation.accident_counter += 1
                     Simulation.if_acc = 1  # Sprzezenie zwrotne czy osoba miala wypadek w tym miesiacu
                     Simulation.month_expenses += person.accident_cost
@@ -77,12 +88,31 @@ class Simulation:
                         Simulation.women_acc += 1
 
                 if person.check_death():
+                    if Simulation.if_visualisation:
+                        Visualisation.add_unit_to_section("death", person.gender)
+                        Visualisation.remove_unit_from_section("people", person.gender)
+
                     Simulation.death_counter += 1
                     Simulation.people.remove(person)  # usuwanie ubezpieczonego, jeśli zginął
 
+                if 18 <= person.age <= 38:
+                    Simulation.young_people += 1
+                if 39 <= person.age <= 69:
+                    Simulation.middle_people += 1
+                if 70 <= person.age:
+                    Simulation.old_people += 1
+
                 Simulation.calculate_person(person)  # wliczanie osoby do danego przedzialu
                 Simulation.if_acc = 0  # Reset sprzezenia
+            if Simulation.if_visualisation:
+                Visualisation.age_young_counter = Simulation.young_people
+                Visualisation.age_middle_counter = Simulation.middle_people
+                Visualisation.age_old_counter = Simulation.old_people
+                Visualisation.start_visualisation()
+
             Insurance.collected_money -= Insurance.employees * Insurance.SALARY  # wypłata pracowników ubezpieczalni
+            if Simulation.if_visualisation:
+                Visualisation.budget = Insurance.collected_money
             Simulation.month_expenses += Insurance.employees * Insurance.SALARY
 
             Simulation.print_log()
@@ -112,6 +142,14 @@ class Simulation:
         driver_exp_years = Simulation.rng.gen_random_between(0, age - 18)
 
         person = Person(age, gender, car_cost, driver_exp_years)
+        if Simulation.if_visualisation:
+            Visualisation.add_unit_to_section("people", gender)
+            if 18 <= person.age <= 35:
+                Visualisation.add_unit_to_section("young", gender)
+            if 36 <= person.age <= 69:
+                Visualisation.add_unit_to_section("middle", gender)
+            if 70 <= person.age:
+                Visualisation.add_unit_to_section("old", gender)
         return person
 
     @staticmethod
@@ -175,5 +213,15 @@ class Simulation:
                 Simulation.over_seven_acc += 1
             Simulation.over_seven_age += person_age
 
+
+if_visualisation_input = input("Czy chcesz wyświetlić wizualizacje (T/N): ")
+
+while if_visualisation_input not in ['t', 'T', 'n', 'N']:
+    if_visualisation_input = input("Czy chcesz wyświetlić wizualizacje (T/N): ")
+
+if if_visualisation_input in ['t', 'T']:
+    Simulation.if_visualisation = True
+else:
+    print("Symulacja trwa...")
 
 Simulation.main()
