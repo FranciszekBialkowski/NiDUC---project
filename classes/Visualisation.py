@@ -18,7 +18,7 @@ class Visualisation:
     budget = 0
 
     # Legenda
-    LEGEND_WIDTH = WIDTH // 10
+    LEGEND_WIDTH = WIDTH // 9
     LEGEND_HEIGHT = HEIGHT - TIME_HEIGHT
 
     # Główne okno
@@ -48,8 +48,8 @@ class Visualisation:
     GREEN = (54, 192, 59)
     RED = (243, 16, 16)
     YOUNG_COLOR = (255, 127, 39)
-    MIDDLE_COLOR = (112, 146, 190)
-    OLD_COLOR = (255, 174, 201)
+    MIDDLE_COLOR = (128, 128, 64)
+    OLD_COLOR = (128, 0, 64)
 
     # Kolory dla paska czasu
     BAR_HEIGHT = 20
@@ -71,20 +71,6 @@ class Visualisation:
 
     # ikona budżetu
     coin_icon = pygame.image.load('./coin_icon.png')
-
-    @staticmethod
-    def gradient(start_col, end_col, width):
-        """Funkcja do generowania gradientu pomiędzy dwoma kolorami"""
-        result = []
-        for i in range(width):
-            inter = i / width
-            col = (
-                int(start_col[0] * (1 - inter) + end_col[0] * inter),
-                int(start_col[1] * (1 - inter) + end_col[1] * inter),
-                int(start_col[2] * (1 - inter) + end_col[2] * inter)
-            )
-            result.append(col)
-        return result
 
     @staticmethod
     def generate_point_in_circle_quarter(RADIUS, x_center, y_center, start_degree, end_degree):
@@ -151,14 +137,6 @@ class Visualisation:
 
     @staticmethod
     def start_visualisation():
-        grad_blue_green = Visualisation.gradient(Visualisation.BLUE_BAR, Visualisation.GREEN_BAR,
-                                                 Visualisation.WIDTH // 4)
-        grad_green_yellow = Visualisation.gradient(Visualisation.GREEN_BAR, Visualisation.YELLOW_BAR,
-                                                   Visualisation.WIDTH // 4)
-        grad_yellow_red = Visualisation.gradient(Visualisation.YELLOW_BAR, Visualisation.RED_BAR,
-                                                 Visualisation.WIDTH // 2)
-        full_grad = grad_blue_green + grad_green_yellow + grad_yellow_red
-
         pygame.init()
         win = pygame.display.set_mode((Visualisation.WIDTH, Visualisation.HEIGHT))
 
@@ -200,21 +178,24 @@ class Visualisation:
 
         # Legenda - Młodzi
         pygame.draw.rect(win, Visualisation.YOUNG_COLOR, pygame.Rect(Visualisation.LEGEND_WIDTH // 10, 540, 20, 20))
-        young_surface = font.render("Młodzi", True, Visualisation.WHITE)
+        young_surface = font.render("Osoby młode", True, Visualisation.WHITE)
         win.blit(young_surface, (
             Visualisation.LEGEND_WIDTH // 6 + Visualisation.CIRCLE_RADIUS + 7, 550 - Visualisation.FONT_SIZE // 3))
 
         # Legenda - W średnim wieku
         pygame.draw.rect(win, Visualisation.MIDDLE_COLOR, pygame.Rect(Visualisation.LEGEND_WIDTH // 10, 592, 20, 20))
-        middle_surface = font.render("Średni", True, Visualisation.WHITE)
-        win.blit(middle_surface, (
+        middle_surface_1 = font.render("Osoby w", True, Visualisation.WHITE)
+        middle_surface_2 = font.render("średnim wieku", True, Visualisation.WHITE)
+        win.blit(middle_surface_1, (
             Visualisation.LEGEND_WIDTH // 6 + Visualisation.CIRCLE_RADIUS + 7, 600 - Visualisation.FONT_SIZE // 3))
+        win.blit(middle_surface_2, (
+            Visualisation.LEGEND_WIDTH // 6 + Visualisation.CIRCLE_RADIUS + 7, 630 - Visualisation.FONT_SIZE // 3))
 
         # Legenda - Starzy
-        pygame.draw.rect(win, Visualisation.OLD_COLOR, pygame.Rect(Visualisation.LEGEND_WIDTH // 10, 640, 20, 20))
-        old_surface = font.render("Starzy", True, Visualisation.WHITE)
+        pygame.draw.rect(win, Visualisation.OLD_COLOR, pygame.Rect(Visualisation.LEGEND_WIDTH // 10, 670, 20, 20))
+        old_surface = font.render("Osoby starsze", True, Visualisation.WHITE)
         win.blit(old_surface, (
-            Visualisation.LEGEND_WIDTH // 6 + Visualisation.CIRCLE_RADIUS + 7, 650 - Visualisation.FONT_SIZE // 3))
+            Visualisation.LEGEND_WIDTH // 6 + Visualisation.CIRCLE_RADIUS + 7, 680 - Visualisation.FONT_SIZE // 3))
 
         # ---------------------------------GŁÓWNA RAMKA---------------------------------------#
         # Rysowanie ramki dla dużego prostokąta
@@ -324,7 +305,7 @@ class Visualisation:
 
         # Rysowanie paska ładowania
         for i in range(Visualisation.LEGEND_WIDTH, int(Visualisation.LOADING_PART * Visualisation.TIME_WIDTH)):
-            pygame.draw.line(win, full_grad[i], (i, Visualisation.LEGEND_HEIGHT + Visualisation.TIME_HEIGHT // 4),
+            pygame.draw.line(win, Visualisation.WHITE, (i, Visualisation.LEGEND_HEIGHT + Visualisation.TIME_HEIGHT // 4),
                              (i, Visualisation.LEGEND_HEIGHT + (Visualisation.TIME_HEIGHT // 4) * 3))
 
         # Zwiększenie paska ładowania
