@@ -8,7 +8,7 @@ class RandomGenerator:
         self.a = 3141592653  # π * 10^9
         self.c = 2718281829  # e * 10^9
         self.seed = in_seed
-        self.seed_for_zero_one = 99999
+        self.seed_for_zero_one = int(99999 + in_seed*2)
 
     def gen_random_between(self, min_val, max_val):
         """Losowanie liczby z zadanego przedziału"""
