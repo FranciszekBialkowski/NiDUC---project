@@ -1,7 +1,6 @@
 # NiDUC---Projekt-Prosty-Model-Systemu-Ubezpieczeniowego
 
 Plan projektu
-Skład grupy: Franciszek Białkowski, Jakub Błaszczyński, Julian Zalewski
 Temat: Prosty model systemu ubezpieczeniowego
 Data: 20.03.2023
 
